@@ -68,37 +68,38 @@ function buildMessage(leaderboard, previousBoard) {
     return text;
 }
 
-async function refresh() {
-    try {
-        console.log(`Getting leaderboard`);
-        let response = await axios.get(url);
+function refresh() {
+    console.log(`Getting leaderboard`);
+    axios
+        .get(url)
+        .then(response => {
+            console.log('Got it');
+            let leaderboard = extractLeaderboard(response.data);
+            let totalPoints = leaderboard.reduce((total, member) => total + member.score, 0);
+            if (totalPoints !== lastTotalPoints) {
+                if (!firstRun) {
+                    console.log('Looks like something changed, posting to Slack');
+                    console.log('-----------------------------------------');
+                    let text = buildMessage(leaderboard, lastboard);
+                    console.log(text);
+                    console.log('-----------------------------------------');
 
-        console.log('Got it');
-        let leaderboard = extractLeaderboard(response.data);
-        let totalPoints = leaderboard.reduce((total, member) => total + member.score, 0);
-        if (totalPoints !== lastTotalPoints) {
-            if (!firstRun) {
-                console.log('Looks like something changed, posting to Slack');
-                console.log('-----------------------------------------');
-                let text = buildMessage(leaderboard, lastboard);
-                console.log(text);
-                console.log('-----------------------------------------');
-
-                axios.post(webhook, {
-                    text: text,
-                    mrkdwn: true,
-                    username: config.botName || 'AdventBot',
-                });
-                firstRun = false;
+                    axios.post(webhook, {
+                        text: text,
+                        mrkdwn: true,
+                        username: config.botName || 'AdventBot',
+                    });
+                    firstRun = false;
+                } else {
+                    console.log('First run so not posting to Slack');
+                }
             } else {
-                console.log('First run so not posting to Slack');
+                console.log('No changes');
             }
-        } else {
-            console.log('No changes');
-        }
-        lastTotalPoints = totalPoints;
-        lastboard = leaderboard;
-    } catch (err) {
-        console.error(err);
-    }
+            lastTotalPoints = totalPoints;
+            lastboard = leaderboard;
+        })
+        .catch(err => {
+            console.error(err);
+        });
 }
