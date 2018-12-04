@@ -1,0 +1,24 @@
+{
+  "name": "slack-advent",
+  "version": "1.0.0",
+  "description": "",
+  "main": "check.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "left-pad": "^1.3.0",
+    "request": "^2.88.0",
+    "right-pad": "^1.0.1"
+  },
+  "prettier": {
+    "printWidth": 140,
+    "tabWidth": 4,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "all"
+  }
+}

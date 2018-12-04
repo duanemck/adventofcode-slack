@@ -1,0 +1,14 @@
+{
+    "adventSessionCookie": "session=...",
+    "leaderboardUrl": "https://adventofcode.com/2018/leaderboard/private/view/XXXXXX.json",
+    "slackWebhookUrl": "https://hooks.slack.com/services/XXX/YYY/ZZZ",
+    "checkIntervalMinutes": 10,
+    "icons": {
+        "goldStar": ":star:",
+        "silverStar": ":silver-star:",
+        "trendUp": ":arrow_up_small:",
+        "trendDown": ":arrow_down_small:",
+        "trendSame": ":blank:",
+        "bullet": ":santa:"
+    }
+}
