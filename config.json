@@ -3,6 +3,7 @@
     "leaderboardUrl": "https://adventofcode.com/2018/leaderboard/private/view/XXXXXX.json",
     "slackWebhookUrl": "https://hooks.slack.com/services/XXX/YYY/ZZZ",
     "checkIntervalMinutes": 10,
+    "botName": "AdventBot",
     "icons": {
         "goldStar": ":star:",
         "silverStar": ":silver-star:",
