@@ -6,7 +6,7 @@ const config = require('./config.json');
 
 const cookie = config.adventSessionCookie;
 const url = config.leaderboardUrl;
-const webhook = config.slackWebhookUrlTest;
+const webhook = config.slackWebhookUrl;
 
 let firstRun = true;
 let lastTotalPoints = null;
