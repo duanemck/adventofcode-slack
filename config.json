@@ -5,6 +5,8 @@
     "checkIntervalMinutes": 10,
     "botName": "AdventBot",
     "icons": {
+        "noStar": ":blank:",
+        "blank": ":blank:",
         "goldStar": ":star:",
         "silverStar": ":silver-star:",
         "trendUp": ":arrow_up_small:",

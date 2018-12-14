@@ -26,6 +26,7 @@ function extractLeaderboard(responseData) {
             name: member.name,
             stars: member.stars,
             score: member.local_score,
+            starList: member.completion_day_level,
         });
     }
     leaderboard.sort((a, b) => {
@@ -45,20 +46,37 @@ function extractLeaderboard(responseData) {
 function buildMemberScore(member, lastRank) {
     let down = lastRank ? member.rank - lastRank > 0 : false;
     let up = lastRank ? member.rank - lastRank < 0 : false;
-    let goldstars = member.stars / 2;
-    let silverstars = member.stars % 2;
+
     let trend = up ? config.icons.trendUp : down ? config.icons.trendDown : config.icons.trendSame;
     let name = `\`${rightPad(member.name, 30, ' ')}\``;
     let score = `\`${leftPad(`${member.score}`, 3, ' ')}\``;
-    let goldStarsEmojis = `${leftPad('', goldstars, config.icons.goldStar)}`;
-    let silverEmojis = `${leftPad('', silverstars, config.icons.silverStar)}`;
-    let stars = `${goldStarsEmojis}${silverEmojis}`;
 
+    let stars = '';
+    let daysCompleted = Object.keys(member.starList);
+    let lastDayCompleted = daysCompleted[daysCompleted.length - 1];
+    for (let key = 0; key <= lastDayCompleted; key++) {
+        let day = member.starList[key];
+        if (!day) {
+            stars += config.icons.noStar;
+        } else {
+            stars += day[2] ? config.icons.goldStar : config.icons.silverStar;
+        }
+    }
     return `${config.icons.bullet} ${trend} ${score} ${name} ${stars} \n`;
+}
+
+function header() {
+    let oneToTen = ':one::two::three::four::five::six::seven::eight::nine::zero:';
+    let oneToFive = ':one::two::three::four::five:';
+
+    let line1 = `   ${leftPad('', 23, config.icons.blank)}${leftPad('', 10, ':one:')}${leftPad('', 6, ':two:')}`;
+    let line2 = `   ${leftPad('', 14, config.icons.blank)}${oneToTen}${oneToTen}${oneToFive}`;
+    return `${line1}\n${line2}\n`;
 }
 
 function buildMessage(leaderboard, previousBoard) {
     let text = '*Change in leaderboard:*\n\n';
+    text += header();
     for (member of leaderboard) {
         let lastDetails = previousBoard.find(m => m.id === member.id);
         let lastRank = lastDetails ? lastDetails.rank : null;
@@ -89,13 +107,13 @@ function refresh() {
                         mrkdwn: true,
                         username: config.botName || 'AdventBot',
                     });
-                    firstRun = false;
                 } else {
                     console.log('First run so not posting to Slack');
                 }
             } else {
                 console.log('No changes');
             }
+            firstRun = false;
             lastTotalPoints = totalPoints;
             lastboard = leaderboard;
         })
