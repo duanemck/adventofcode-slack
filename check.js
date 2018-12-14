@@ -87,6 +87,7 @@ function buildMessage(leaderboard, previousBoard) {
 }
 
 function refresh() {
+    console.log(new Date());
     console.log(`Getting leaderboard`);
     axios
         .get(url)
