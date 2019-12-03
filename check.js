@@ -48,13 +48,13 @@ function buildMemberScore(member, lastRank) {
     let up = lastRank ? member.rank - lastRank < 0 : false;
 
     let trend = up ? config.icons.trendUp : down ? config.icons.trendDown : config.icons.trendSame;
-    let name = `\`${rightPad(member.name, 30, ' ')}\``;
+    let name = `\`${rightPad(member.name || 'Anon', 30, ' ')}\``;
     let score = `\`${leftPad(`${member.score}`, 3, ' ')}\``;
 
     let stars = '';
     let daysCompleted = Object.keys(member.starList);
-    let lastDayCompleted = daysCompleted[daysCompleted.length - 1];
-    for (let key = 0; key <= lastDayCompleted; key++) {
+    let lastDayCompleted = +daysCompleted[daysCompleted.length - 1];
+    for (let key = 1; key <= lastDayCompleted; key++) {
         let day = member.starList[key];
         if (!day) {
             stars += config.icons.noStar;
@@ -107,6 +107,7 @@ function refresh() {
                         text: text,
                         mrkdwn: true,
                         username: config.botName || 'AdventBot',
+                        icon_emoji: config.botIcon
                     });
                 } else {
                     console.log('First run so not posting to Slack');
