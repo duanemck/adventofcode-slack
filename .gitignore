@@ -2,3 +2,4 @@ node_modules
 real-config.json
 test.json
 .vscode
+lastCheck.json

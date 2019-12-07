@@ -3,16 +3,29 @@ const leftPad = require('left-pad');
 const rightPad = require('right-pad');
 
 const config = require('./config.json');
+const fs = require('fs');
 
 const cookie = config.adventSessionCookie;
 const url = config.leaderboardUrl;
 const webhook = config.slackWebhookUrl;
+
+const lastCheckFile = `lastCheck.json`;
 
 let firstRun = true;
 let lastTotalPoints = null;
 let lastboard = [];
 
 axios.defaults.headers.common['cookie'] = cookie;
+
+if (fs.existsSync(lastCheckFile)) {
+    let restoredState = JSON.parse(fs.readFileSync(lastCheckFile));
+    if (restoredState) {
+        console.log(`Restored state from file`);
+        lastTotalPoints = restoredState.lastTotalPoints || null;
+        lastboard = restoredState.lastboard || [];
+        firstRun = false;
+    }
+}
 
 setInterval(refresh, 60000 * (config.checkIntervalMinutes || 10));
 refresh();
@@ -44,10 +57,16 @@ function extractLeaderboard(responseData) {
 }
 
 function buildMemberScore(member, lastRank) {
-    let down = lastRank ? member.rank - lastRank > 0 : false;
-    let up = lastRank ? member.rank - lastRank < 0 : false;
 
-    let trend = up ? config.icons.trendUp : down ? config.icons.trendDown : config.icons.trendSame;
+    let rankChange = lastRank ? member.rank - lastRank : 0;
+    //rankChange = Math.floor(Math.random() * 10) - 5;
+    let rankChangeP = `\`${rightPad(`${Math.abs(rankChange) > 0 ? Math.abs(rankChange) : ' '}`, 2, ' ')}\``
+
+    let down = rankChange > 0;
+    let up = rankChange < 0;
+
+    let trend = up ? `${config.icons.trendUp}${rankChangeP}` : down ? `${config.icons.trendDown}${rankChangeP}` : `${config.icons.trendSame}${config.icons.trendSame}`;
+    let rank = `\`${leftPad(`${member.rank}`, 2, ' ')}\``;
     let name = `\`${rightPad(member.name || 'Anon', 30, ' ')}\``;
     let score = `\`${leftPad(`${member.score}`, 3, ' ')}\``;
 
@@ -62,15 +81,15 @@ function buildMemberScore(member, lastRank) {
             stars += day[2] ? config.icons.goldStar : config.icons.silverStar;
         }
     }
-    return `${config.icons.bullet} ${trend} ${score} ${name} ${stars} \n`;
+    return `${config.icons.bullet} ${rank} ${trend} ${score} ${name} ${stars} \n`;
 }
 
 function header() {
     let oneToTen = ':one::two::three::four::five::six::seven::eight::nine::zero:';
     let oneToFive = ':one::two::three::four::five:';
 
-    let line1 = `   ${leftPad('', 23, config.icons.blank)}${leftPad('', 10, ':one:')}${leftPad('', 6, ':two:')}`;
-    let line2 = `   ${leftPad('', 14, config.icons.blank)}${oneToTen}${oneToTen}${oneToFive}`;
+    let line1 = `   ${leftPad('', 25, config.icons.blank)}${leftPad('', 10, ':one:')}${leftPad('', 6, ':two:')}`;
+    let line2 = `   ${leftPad('', 16, config.icons.blank)}${oneToTen}${oneToTen}${oneToFive}`;
     return `${line1}\n${line2}\n`;
 }
 
@@ -118,6 +137,12 @@ function refresh() {
             firstRun = false;
             lastTotalPoints = totalPoints;
             lastboard = leaderboard;
+            let savedState = {
+                lastTotalPoints,
+                lastboard
+            };
+
+            fs.writeFile(lastCheckFile, JSON.stringify(savedState), 'utf8', () => { });
         })
         .catch(err => {
             console.error(err);
