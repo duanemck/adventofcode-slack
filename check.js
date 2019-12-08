@@ -10,8 +10,10 @@ const url = config.leaderboardUrl;
 const webhook = config.slackWebhookUrl;
 
 const lastCheckFile = `lastCheck.json`;
+const formatDistance = require('date-fns/formatDistance');
 
 let firstRun = true;
+let forcedSlack = true;
 let lastTotalPoints = null;
 let lastboard = [];
 
@@ -81,7 +83,18 @@ function buildMemberScore(member, lastRank) {
             stars += day[2] ? config.icons.goldStar : config.icons.silverStar;
         }
     }
-    return `${config.icons.bullet} ${rank} ${trend} ${score} ${name} ${stars} \n`;
+    if (stars != '') {
+        for (let i = 0; i < 25 - lastDayCompleted; i++) {
+            stars = `${stars}:blank:`;
+        }     
+    }
+    var lastStarAgo = '';
+    if (lastDayCompleted > 0) {
+        let lastStar = member.starList[lastDayCompleted][2] ? member.starList[lastDayCompleted][2].get_star_ts : member.starList[lastDayCompleted][1].get_star_ts;
+        var date = new Date(lastStar * 1000);
+        lastStarAgo = `Last star achieved ${formatDistance(date, new Date())} ago`;
+    }
+    return `${config.icons.bullet} ${rank} ${trend} ${score} ${name} ${stars || ''} ${lastStarAgo} \n`;
 }
 
 function header() {
@@ -114,8 +127,8 @@ function refresh() {
             console.log('Got it');
             let leaderboard = extractLeaderboard(response.data);
             let totalPoints = leaderboard.reduce((total, member) => total + member.score, 0);
-            if (totalPoints !== lastTotalPoints) {
-                if (!firstRun) {
+            if (forcedSlack || (totalPoints !== lastTotalPoints)) {
+                if (!firstRun || forcedSlack) {
                     console.log('Looks like something changed, posting to Slack');
                     console.log('-----------------------------------------');
                     let text = buildMessage(leaderboard, lastboard);
