@@ -13,7 +13,7 @@ const lastCheckFile = `lastCheck.json`;
 const formatDistance = require('date-fns/formatDistance');
 
 let firstRun = true;
-let forcedSlack = true;
+let forcedSlack = false;
 let lastTotalPoints = null;
 let lastboard = [];
 
