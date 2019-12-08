@@ -1,8 +1,8 @@
 {
-    "adventSessionCookie": "session=53616c7465645f5f247057d0292028941a5bb13dab23b89fcce913316a7b939af02c6186281de940c23d015f097e2609",
-    "leaderboardUrl": "https://adventofcode.com/2019/leaderboard/private/view/43048.json",
-    "slackWebhookUrlTest": "https://hooks.slack.com/services/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",
-    "slackWebhookUrl":"https://hooks.slack.com/services/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",
+    "adventSessionCookie": "session=",
+    "leaderboardUrl": "",
+    "slackWebhookUrlTest": "",
+    "slackWebhookUrl":"",
     "checkIntervalMinutes": 60,
     "botName": "Advent of Code Bot",
     "botIcon": ":santa:",
