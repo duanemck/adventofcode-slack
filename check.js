@@ -12,6 +12,9 @@ const webhook = config.slackWebhookUrl;
 const lastCheckFile = `lastCheck.json`;
 const formatDistance = require('date-fns/formatDistance');
 
+const chunkSize = config.chunkSize || 10;
+const chunkDelay = config.chunkDelay || 2;
+
 let firstRun = true;
 let forcedSlack = false;
 let lastTotalPoints = null;
@@ -106,7 +109,8 @@ function header() {
   return `${line1}\n${line2}\n`;
 }
 
-const chunkSize = 10;
+
+
 function getChunk(leaderboard, chunkNumber) {
   let start = chunkNumber * chunkSize;
   let end = start + chunkSize;
@@ -154,7 +158,7 @@ async function postToSlack(messages) {
       icon_emoji: config.botIcon
     });
     console.log(`Small Delay to ensure order`);
-    await sleep(2000);
+    await sleep(chunkDelay * 1000);
   }
   console.log(`Finished`);
 }
