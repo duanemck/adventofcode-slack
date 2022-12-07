@@ -64,7 +64,6 @@ function extractLeaderboard(responseData) {
 function buildMemberScore(member, lastRank) {
 
   let rankChange = lastRank ? member.rank - lastRank : 0;
-  //rankChange = Math.floor(Math.random() * 10) - 5;
   let rankChangeP = `\`${rightPad(`${Math.abs(rankChange) > 0 ? Math.abs(rankChange) : ' '}`, 2, ' ')}\``
 
   let down = rankChange > 0;
@@ -104,8 +103,8 @@ function header() {
   let oneToTen = ':one::two::three::four::five::six::seven::eight::nine::zero:';
   let oneToFive = ':one::two::three::four::five:';
 
-  let line1 = `   ${leftPad('', 25, config.icons.blank)}${leftPad('', 10, ':one:')}${leftPad('', 6, ':two:')}`;
-  let line2 = `   ${leftPad('', 16, config.icons.blank)}${oneToTen}${oneToTen}${oneToFive}`;
+  let line1 = ` ${leftPad('', 25, config.icons.blank)}${leftPad('', 10, ':one:')}${leftPad('', 6, ':two:')}`;
+  let line2 = ` ${leftPad('', 16, config.icons.blank)}${oneToTen}${oneToTen}${oneToFive}`;
   return `${line1}\n${line2}\n`;
 }
 
